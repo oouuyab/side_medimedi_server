@@ -24,4 +24,4 @@ https://medi-medi.info (예정)
 ### Client
 
 - 개발 언어: Javascript
-- 프레임워크: 미정
+- 프레임워크: Svelte
