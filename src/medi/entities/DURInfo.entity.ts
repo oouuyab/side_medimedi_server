@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 
-@Entity('tb_medi_dur_info')
-export class MediDURInfo {
+@Entity('tb_dur_info')
+export class DURInfoEntity {
   @Column({ name: 'ingr_name_a' })
   ingrNameA: string;
 
