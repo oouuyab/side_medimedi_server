@@ -11,8 +11,8 @@ export class DrugInfoEntity {
   @Column({ name: 'drug_company' })
   drugCompany: string;
 
-  @Column({ name: 'drug_code' })
-  drugCode: number;
+  @Column({ name: 'new_code' })
+  newCode: number;
 
   @Column({ name: 'search_cnt' })
   searchCnt: number;

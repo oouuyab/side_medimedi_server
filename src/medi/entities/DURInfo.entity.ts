@@ -2,6 +2,9 @@ import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity('tb_dur_info')
 export class DURInfoEntity {
+  @PrimaryColumn({ name: 'dur_info_no' })
+  durInfoNo: number;
+
   @Column({ name: 'ingr_name_a' })
   ingrNameA: string;
 
@@ -37,4 +40,7 @@ export class DURInfoEntity {
 
   @Column({ name: 'drug_fm_code_b' })
   drugFMCodeB: string;
+
+  @Column({ name: 'side_effect_desc' })
+  sideEffectDesc: string;
 }

@@ -1,17 +1,52 @@
-export class getSearchMediDto {
+import { IsString } from 'class-validator';
+
+export interface DrugInfoInterface {
   drugName: string;
+  drugCompany: string;
+  drugCode: string;
+}
+export interface DrugInfoWithSideEffectInterface extends DrugInfoInterface {
+  sideEffect: string;
+}
+export class SearchMediReqDto {
+  @IsString()
+  keyword: string;
 }
 
-export class getSearchResMediDto {
-  private drugNameA: string;
-  private drugCompanyA: string;
-  private drugCodeA: string;
+export class SearchMediResDto {
+  private drugName: string;
+  private drugCompany: string;
+  private drugCode: string;
 
   constructor(item: any) {
-    this.drugNameA = item.ITEM_NAME
+    this.drugName = item.drugName
       .replace(/\(수출명:.*$/, '')
-      .replace(/\(/,' (',);
-    this.drugCompanyA = item.ENTP_NAME;
-    this.drugCodeA = item.ITEM_SEQ;
+      .replace(/\(/, ' (');
+    this.drugCompany = item.drugCompany;
+    this.drugCode = item.newCode;
   }
+}
+
+export class SearchInfoReqDto implements DrugInfoInterface {
+  @IsString()
+  drugName: string;
+
+  @IsString()
+  drugCompany: string;
+
+  @IsString()
+  drugCode: string;
+}
+
+export class SearchDURInfoReqDto implements DrugInfoInterface {
+  drugName: string;
+  drugCompany: string;
+  drugCode: string;
+}
+
+export class SearchDURInfoResDto implements DrugInfoInterface {
+  drugName: string;
+  drugCompany: string;
+  drugCode: string;
+  durInfo: DrugInfoWithSideEffectInterface[];
 }

@@ -1,45 +1,76 @@
 import { Injectable } from '@nestjs/common';
-import { CreateMediDto } from './dto/create-medi.dto';
-import { UpdateMediDto } from './dto/update-medi.dto';
-import axios from 'axios';
-import { getSearchResMediDto } from './dto/get-search-medi.dto';
+import {
+  SearchDURInfoReqDto,
+  SearchDURInfoResDto,
+  SearchMediReqDto,
+  SearchMediResDto,
+} from './dto/get-search-medi.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { DrugInfoEntity } from './entities/DrugInfo.entity';
+import { Repository } from 'typeorm';
+import { DURInfoEntity } from './entities/DURInfo.entity';
+import * as _ from 'lodash';
 
 @Injectable()
 export class MediService {
-  async getDrugInfo(keyword: string) {
-    let url =
-      'http://apis.data.go.kr/1471000/DrugPrdtPrmsnInfoService02/getDrugPrdtPrmsnDtlInq01';
+  constructor(
+    @InjectRepository(DrugInfoEntity)
+    private drugInfoRepository: Repository<DrugInfoEntity>,
+    @InjectRepository(DURInfoEntity)
+    private durInfoRepository: Repository<DURInfoEntity>,
+  ) {}
 
-    let queryParams =
-      '?' +
-      encodeURIComponent('serviceKey') +
-      '=' +
-      process.env.API_ENCODING_KEY;
-    queryParams +=
-      '&' +
-      encodeURIComponent('pageNo') +
-      '=' +
-      encodeURIComponent('1') +
-      '&' +
-      encodeURIComponent('numOfRows') +
-      '=' +
-      encodeURIComponent('10');
-    queryParams +=
-      '&' + encodeURIComponent('type') + '=' + encodeURIComponent('json');
-    queryParams +=
-      '&' + encodeURIComponent('item_name') + '=' + encodeURIComponent(keyword);
+  async getDrugInfo(keyword: SearchMediReqDto): Promise<SearchMediResDto[]> {
+    const data = await this.drugInfoRepository
+      .createQueryBuilder('drug')
+      .select('drug.drugName')
+      .addSelect('drug.drugCompany')
+      .addSelect('drug.newCode')
+      .where('drug.drugName like concat("%", :keyword, "%")', { keyword })
+      .andWhere('drug.newCode is not null')
+      .groupBy('drug.newCode')
+      .orderBy('drug.searchCnt', 'DESC')
+      .getMany();
 
-    const res = await axios({
-      method: 'get',
-      url: url + queryParams,
-    });
+    return data.map((el) => new SearchMediResDto(el));
+  }
 
-    let data: getSearchResMediDto[] = [];
+  async searchDurInfo(
+    data: SearchDURInfoReqDto[],
+  ): Promise<SearchDURInfoResDto[]> {
+    const res: SearchDURInfoResDto[] = [];
 
-    for (const item of res.data.body.items) {
-      data.push(new getSearchResMediDto(item));
+    for (let i = 0; i < data.length; i++) {
+      const drugWithDurInfo: SearchDURInfoResDto = {
+        ...data[i],
+        durInfo: [],
+      };
+
+      for (let j = 0; j < data.length; j++) {
+        if (i === j) {
+          continue;
+        }
+
+        const durInfo = await this.durInfoRepository.findOne({
+          where: {
+            drugCodeA: parseInt(data[i].drugCode),
+            drugCodeB: parseInt(data[j].drugCode),
+          },
+        });
+
+        if (!_.isEmpty(durInfo)) {
+          drugWithDurInfo.durInfo.push({
+            drugName: durInfo.drugNameB,
+            drugCompany: durInfo.drugCompanyB,
+            drugCode: '' + durInfo.drugCodeB,
+            sideEffect: durInfo.sideEffectDesc,
+          });
+        }
+      }
+
+      res.push(drugWithDurInfo);
     }
 
-    return data;
+    return res;
   }
 }
