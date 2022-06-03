@@ -1,9 +1,9 @@
-import { IsString } from 'class-validator';
+import { IsNumber, IsString } from 'class-validator';
 
 export interface DrugInfoInterface {
   drugName: string;
   drugCompany: string;
-  drugCode: string;
+  drugCode: number;
 }
 export interface DrugInfoWithSideEffectInterface extends DrugInfoInterface {
   sideEffect: string;
@@ -23,7 +23,7 @@ export class SearchMediResDto {
       .replace(/\(수출명:.*$/, '')
       .replace(/\(/, ' (');
     this.drugCompany = item.drugCompany;
-    this.drugCode = item.newCode;
+    this.drugCode = item.drugCode;
   }
 }
 
@@ -34,19 +34,19 @@ export class SearchInfoReqDto implements DrugInfoInterface {
   @IsString()
   drugCompany: string;
 
-  @IsString()
-  drugCode: string;
+  @IsNumber()
+  drugCode: number;
 }
 
 export class SearchDURInfoReqDto implements DrugInfoInterface {
   drugName: string;
   drugCompany: string;
-  drugCode: string;
+  drugCode: number;
 }
 
 export class SearchDURInfoResDto implements DrugInfoInterface {
   drugName: string;
   drugCompany: string;
-  drugCode: string;
+  drugCode: number;
   durInfo: DrugInfoWithSideEffectInterface[];
 }

@@ -25,10 +25,10 @@ export class MediService {
       .createQueryBuilder('drug')
       .select('drug.drugName')
       .addSelect('drug.drugCompany')
-      .addSelect('drug.newCode')
+      .addSelect('drug.drugCode')
       .where('drug.drugName like concat("%", :keyword, "%")', { keyword })
-      .andWhere('drug.newCode is not null')
-      .groupBy('drug.newCode')
+      .andWhere('drug.drugCode is not null')
+      .groupBy('drug.drugCode')
       .orderBy('drug.searchCnt', 'DESC')
       .getMany();
 
@@ -53,8 +53,8 @@ export class MediService {
 
         const durInfo = await this.durInfoRepository.findOne({
           where: {
-            drugCodeA: parseInt(data[i].drugCode),
-            drugCodeB: parseInt(data[j].drugCode),
+            drugCodeA: data[i].drugCode,
+            drugCodeB: data[j].drugCode,
           },
         });
 
@@ -62,7 +62,7 @@ export class MediService {
           drugWithDurInfo.durInfo.push({
             drugName: durInfo.drugNameB,
             drugCompany: durInfo.drugCompanyB,
-            drugCode: '' + durInfo.drugCodeB,
+            drugCode: durInfo.drugCodeB,
             sideEffect: durInfo.sideEffectDesc,
           });
         }
