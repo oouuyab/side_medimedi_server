@@ -8,10 +8,6 @@ export interface DrugInfoInterface {
 export interface DrugInfoWithSideEffectInterface extends DrugInfoInterface {
   sideEffect: string;
 }
-export class SearchMediReqDto {
-  @IsString()
-  keyword: string;
-}
 
 export class SearchMediResDto {
   private drugName: string;

@@ -13,7 +13,6 @@ import {
 } from '@nestjs/common';
 import {
   SearchDURInfoReqDto,
-  SearchMediReqDto,
   SearchMediResDto,
 } from './dto/get-search-medi.dto';
 import { MediService } from './medi.service';
@@ -41,7 +40,7 @@ export class MediController {
   async findAll(
     @Req() req,
     @Res() res,
-    @Query('keyword') keyword: SearchMediReqDto,
+    @Query('keyword') keyword: string,
   ): Promise<SearchMediResDto[]> {
     // this.printLoggerServiceLog(keyword);
     const data = await this.mediService.getDrugInfo(keyword);

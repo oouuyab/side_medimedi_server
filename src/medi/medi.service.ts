@@ -1,36 +1,26 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import {
   SearchDURInfoReqDto,
   SearchDURInfoResDto,
-  SearchMediReqDto,
   SearchMediResDto,
 } from './dto/get-search-medi.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { DrugInfoEntity } from './entities/DrugInfo.entity';
-import { Repository } from 'typeorm';
-import { DURInfoEntity } from './entities/DURInfo.entity';
 import * as _ from 'lodash';
+import { MediModel } from './model/medi.model';
+import { ERR_MSG } from 'src/common/constant/err-msg';
 
 @Injectable()
 export class MediService {
   constructor(
-    @InjectRepository(DrugInfoEntity)
-    private drugInfoRepository: Repository<DrugInfoEntity>,
-    @InjectRepository(DURInfoEntity)
-    private durInfoRepository: Repository<DURInfoEntity>,
+    @Inject(MediModel)
+    private mediModel: MediModel,
   ) {}
 
-  async getDrugInfo(keyword: SearchMediReqDto): Promise<SearchMediResDto[]> {
-    const data = await this.drugInfoRepository
-      .createQueryBuilder('drug')
-      .select('drug.drugName')
-      .addSelect('drug.drugCompany')
-      .addSelect('drug.drugCode')
-      .where('drug.drugName like concat("%", :keyword, "%")', { keyword })
-      .andWhere('drug.drugCode is not null')
-      .groupBy('drug.drugCode')
-      .orderBy('drug.searchCnt', 'DESC')
-      .getMany();
+  async getDrugInfo(keyword: string): Promise<SearchMediResDto[]> {
+    if (keyword === '') {
+      throw new Error(ERR_MSG.KEYWORD_EMPTY);
+    }
+
+    const data = await this.mediModel.getDrugInfo(keyword);
 
     return data.map((el) => new SearchMediResDto(el));
   }
@@ -51,12 +41,10 @@ export class MediService {
           continue;
         }
 
-        const durInfo = await this.durInfoRepository.findOne({
-          where: {
-            drugCodeA: data[i].drugCode,
-            drugCodeB: data[j].drugCode,
-          },
-        });
+        const durInfo = await this.mediModel.getDurInfo(
+          data[i].drugCode,
+          data[j].drugCode,
+        );
 
         if (!_.isEmpty(durInfo)) {
           drugWithDurInfo.durInfo.push({
@@ -70,6 +58,12 @@ export class MediService {
 
       res.push(drugWithDurInfo);
     }
+
+    // * 검색 결과 순위를 위해 searchCnt 업데이트
+    // . lock wait timeout exceeded 발생
+    // for (const drug of res) {
+    //   await this.mediModel.updateDrugSearchCnt(drug.drugCode);
+    // }
 
     return res;
   }
