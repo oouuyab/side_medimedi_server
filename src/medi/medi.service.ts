@@ -61,9 +61,9 @@ export class MediService {
 
     // * 검색 결과 순위를 위해 searchCnt 업데이트
     // . lock wait timeout exceeded 발생
-    // for (const drug of res) {
-    //   await this.mediModel.updateDrugSearchCnt(drug.drugCode);
-    // }
+    for (const drug of res) {
+      await this.mediModel.updateDrugSearchCnt(drug.drugCode);
+    }
 
     return res;
   }
