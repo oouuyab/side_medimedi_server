@@ -3,17 +3,9 @@ os: linux
 files:
   - source: /dist
     destination: /home/ec2-user/server/dist
-  - source: /package.json
-    destination: /home/ec2-user/server
+  - source: /node_modules
+    destination: /home/ec2-user/server/node_modules
 hooks:
   AfterInstall:
-    - location: scripts/set_env
-      timeout: 300
-      runas: root
-#     - location: scripts/start_server
-#       timeout: 300
-#       runas: root
-#   ApplicationStop:
-#     - location: scripts/stop_server
-#       timeout: 300
-#       runas: root
+    - location: script/after-deploy
+      timeout: 180
