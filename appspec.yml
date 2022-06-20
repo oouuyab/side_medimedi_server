@@ -5,6 +5,8 @@ files:
     destination: /home/ec2-user/server/dist
   - source: /node_modules
     destination: /home/ec2-user/server/node_modules
+  - source: ./pm2.json
+    destination: /home/ec2-user/server
 hooks:
   AfterInstall:
     - location: script/after-deploy
