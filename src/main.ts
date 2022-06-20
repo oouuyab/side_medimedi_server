@@ -23,7 +23,9 @@ async function bootstrap() {
     }),
   });
 
-  app.enableCors();
+  app.enableCors({
+    origin: [/http:\/\/localhost:[0-9]+$/, /https:\/\/medimedi\.info$/],
+  });
   await app.listen(8080);
 }
 bootstrap();
