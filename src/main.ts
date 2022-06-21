@@ -26,7 +26,6 @@ async function bootstrap() {
   app.enableCors({
     origin: [/http:\/\/localhost:[0-9]+$/, /https:\/\/medimedi\.info$/],
   });
-  console.log(process.env);
   await app.listen(8080);
 }
 bootstrap();

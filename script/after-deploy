@@ -1,4 +1,4 @@
 #! /bin/bash
 
 sudo aws s3 cp --region ap-northeast-2 s3://medimedi-env/.env.prod /ec2-user/server/.env
-pm2 reload /home/ec2-user/server/pm2.json
+pm2 reload /home/ec2-user/ecosystem.config.js

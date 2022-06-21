@@ -10,6 +10,7 @@ import {
 } from 'nest-winston';
 import { ExceptionModule } from './exception/ExceptionModult';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AwsModule } from './aws/aws.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
     }),
     MediModule,
+    AwsModule,
     // ExceptionModule,
   ],
   controllers: [AppController],
